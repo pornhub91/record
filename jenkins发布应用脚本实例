@@ -1,0 +1,77 @@
+#!/bin/sh
+
+source /etc/profile
+
+CODE_DIR="/opt/ds/panda_data_realtime/data-realtime-all"
+Process_name="data-realtime-all-1.0-SNAPSHOT.jar"
+
+
+status() {
+PID=$(ps -ef | grep ${Process_name} | grep -v grep | awk '{print $2}')
+
+if [ ! -n "$PID" ]; then
+  echo "NO RUNNING"
+else
+  echo "RUNNING"
+  echo "PID IS : $PID"
+fi 
+}
+
+start() {
+PID=$(ps -ef | grep ${Process_name} | grep -v grep | awk '{print $2}')
+
+if [ ! -n "$PID" ]; then
+  cd ${CODE_DIR}
+  nohup java -jar data-realtime-all-1.0-SNAPSHOT.jar --spring.cloud.nacos.config.namespace=a2e6229d-2e77-4d81-bdea-65b710de23ab --spring.profiles.active=test &> /dev/null &
+else
+  echo "Ready RUNNING"
+  echo "PID IS : $PID"
+fi 
+#/usr/bin/supervisorctl start data-realtime-all
+
+}
+
+stop() {
+PID=$(ps -ef | grep ${Process_name} | grep -v grep | awk '{print $2}')
+if [ ! -n "$PID" ]; then
+  echo "NOT RUNNING"
+else
+  echo "PID IS : $PID"
+  kill -9 $PID
+fi
+#/usr/bin/supervisorctl stop data-realtime-all
+
+}
+
+
+case "$1" in
+  'start')
+    start
+    ;;
+
+  'stop')
+    stop
+    ;;
+
+  'restart')
+    stop
+    sleep 5
+    start
+#/usr/bin/supervisorctl restart data-realtime-all
+    ;;
+
+  'status')
+    status
+    ;;
+  'backup')
+     [ ! -d ${CODE_DIR}/yunwei_backup ] && mkdir -pv ${CODE_DIR}/yunwei_backup
+    /usr/bin/cp ${CODE_DIR}/${Process_name}  ${CODE_DIR}/yunwei_backup/${Process_name}_bak-`date +%Y-%m-%d-%H-%M-%S`
+    ;;
+  *)
+    echo "Usage: $0 { start | stop | restart | status | backup }"
+    exit 1
+    ;;
+esac
+
+exit 0
+
