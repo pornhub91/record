@@ -1,0 +1,17 @@
+source /etc/profile
+cd /usr/local/nginx3/
+tar -cvzf yunwei_backup/html_h5._bak-`date +%Y-%m-%d-%H-%M-%S`.tar.gz html_h5/
+############################
+#!/bin/bash
+id && pwd
+source /etc/profile
+/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin/npm install
+/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin/quasar build
+
+sshpass -p "KDSsjdg12987,./&%"  scp -P 24786 -rp /var/lib/jenkins/workspace/Test-panda-h5/dist/spa/* root@161.117.194.247:/usr/local/nginx3/html_h5/
+############################
+构建环境：Test环境
+构建项目名称：${JOB_NAME} 
+构建分支：${GIT_BRANCH}
+构建结果：（Unstable Failed Aborted）失败
+############################
