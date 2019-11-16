@@ -31,3 +31,7 @@ vm.overcommit_memory
 2， 表示内核允许分配超过所有物理内存和交换空间总和的内存
 
 需要改成1
+
+
+# K8S相关
+https://github.com/easzlab/kubeasz
