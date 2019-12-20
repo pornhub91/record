@@ -1,0 +1,103 @@
+下载
+首先下载 Jira 的安装包，以下两种下载方式选择其中一种就可以了，需要注意的就是版本号。
+
+官网页面下载
+https://www.atlassian.com/software/jira/download
+
+旧版本链接地址下载
+wget https://downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-7.6.1-x64.bin
+
+下载8.6.0版本
+wget https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-8.6.0-x64.bin
+
+安装
+由于此文件已经是一个二进制的可执行文件了，设置执行权限之后直接执行即可，之后就是按照英文说明的指示下一步即可。
+
+上传目录内的三个文件
+
+chmod +x atlassian-jira-software-8.5.1-x64.bin
+./atlassian-jira-software-7.6.1-x64.bin
+执行之后跟着选项进行设置
+
+
+安装完成后停止jira
+/opt/atlassian/jira/bin/stop-jira.sh
+
+《mysql-connector-java-5.1.39-bin.jar》
+将此文件放到/opt/atlassian/jira/lib
+
+
+把破解文件《atlassian-extras-3.2.jar》放入以下目录替换原有文件
+
+/opt/atlassian/jira/atlassian-jira/WEB-INF/lib
+
+
+注意：在替换源文件之前注意备份原有文件，以免出现问题。
+
+
+jar包替换完毕后启动jira
+/opt/atlassian/jira/bin/start-jira.sh
+
+
+初始化页面添加许可证的时候直接去注册就好，到购买那一步，复制官网给的key填到jira注册页面，就会完成破解
+##########################以上是安装相关信息##########################
+
+
+
+##########################以下是迁移相关信息##########################
+jira xml文件导出路径：/var/atlassian/application-data/jira/export
+xml文件的导出导入都需要去jira页面操作
+
+
+
+将导出的*.zip文件放入导入路径，去jira恢复页面输入导出的文件名进行恢复
+jira xml文件导入路径：/var/atlassian/application-data/jira/import
+
+
+
+附件位置：/var/atlassian/application-data/jira/data/attachments 
+将备份好的附件放到此目录，旧的目录可以备份下
+
+
+
+迁移jira后修改数据库字符集相关资料
+https://confluence.atlassian.com/kb/how-to-fix-the-collation-and-character-set-of-a-mysql-database-744326173.html
+
+
+迁移jira数据库相关资料
+
+备份jira数据库，导入到需要恢复的数据库（数据库/etc/my.cnf 配置 character-set-server = utf8mb4 数据库默认字符集 ）
+创建jira数据库，导入数据，创建jira用户用于连接数据库
+
+
+设置jira数据库连接信息，根据指引修改连接的数据库
+/opt/atlassian/jira/bin/config.sh
+
+
+导入数据库后需要修改数据库的字符集和表的字符集
+执行以下两条命令：
+
+修改数据库字符集
+ALTER DATABASE jira CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+
+修改表字符集
+SELECT CONCAT('ALTER TABLE ',  table_name, ' CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;')
+FROM information_schema.TABLES AS T, information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` AS C
+WHERE C.collation_name = T.table_collation
+AND T.table_schema = 'jira'
+AND
+(
+    C.CHARACTER_SET_NAME != 'utf8mb4'
+    OR
+    C.COLLATION_NAME != 'utf8mb4_bin'
+);
+
+上述命令执行后会出现类似这样的信息：
+...
+| ALTER TABLE ao_21d670_whitelist_rules CHARACTER SET utf8 COLLATE utf8_bin; |
+...
+
+
+将此类信息复制下来，删掉前面的|和后面的| 去数据库执行一遍，即可修改表的字符集
+
+
