@@ -12,7 +12,8 @@ su - ${Process_user} -l -c "${Process_dir}/bin/elasticsearch -d"
 stop(){
 echo -e "\033[31m stop elasticsearch \033[0m"
 pid=$(ps aux|grep ${Process_name} | grep -v grep| head -n 1 |awk '{print $2}')
-kill -9 $pid
+kill  $pid
+sleep 5
 }
 status() {
 PID=$(ps axu | grep ${Process_name} | grep -v grep | head -n 1 |awk '{print $2}')
