@@ -1,0 +1,46 @@
+#!/bin/bash
+# chkconfig:2345 80 05
+# description:es service
+Process_name="elasticsearch-7.5.0"
+Process_user="es"
+Process_dir="/usr/local/src/elasticsearch-7.5.0"
+start(){
+source /etc/profile
+echo -e "\033[32m start elasticsearch \033[0m"
+su - ${Process_user} -l -c "${Process_dir}/bin/elasticsearch -d"
+}
+stop(){
+echo -e "\033[31m stop elasticsearch \033[0m"
+pid=$(ps aux|grep ${Process_name} | grep -v grep| head -n 1 |awk '{print $2}')
+kill -9 $pid
+}
+status() {
+PID=$(ps axu | grep ${Process_name} | grep -v grep | head -n 1 |awk '{print $2}')
+if [ ! -n "$PID" ]; then
+  echo -e "\033[31m NO RUNNING \033[0m"
+else
+  echo -e "\033[32m RUNNING \n PID:$PID \033[0m"
+fi 
+}
+
+case $1 in
+start)
+start
+;;
+stop)
+stop
+;;
+status)
+status
+;;
+restart)
+stop
+sleep 2
+start
+;;
+*)
+echo "Usage: $0 { start | stop | restart | status }"
+exit 1
+;;
+esac
+exit 0
