@@ -10,7 +10,7 @@ clean install   -T 1C -Dmaven.test.skip=true -Dmaven.compile.fork=true -U -pl  p
 -pl ........ 代表 需要打包的模块
 -am : 把该模块所依赖的包全部打进去
 
-拉去不到最新的jar包原因
+拉取不到最新的jar包原因
 
 用版本号的话每次提交代码都要修改版本号，或者使用快照
 ```
